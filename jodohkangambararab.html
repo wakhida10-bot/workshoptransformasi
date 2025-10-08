@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jodohkan Gambar dengan Bahasa Arab</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0fdf4;
+      margin: 20px;
+    }
+
+    h1 {
+      color: #065f46;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      gap: 10px;
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      width: 160px;
+    }
+
+    .card img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .dropzone {
+      border: 2px dashed #9ca3af;
+      border-radius: 8px;
+      height: 50px;
+      margin-top: 8px;
+      font-size: 24px;
+      direction: rtl;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f2937;
+      background-color: #f9fafb;
+    }
+
+    .dropzone.filled {
+      background-color: #d1fae5;
+      border: 2px solid #10b981;
+    }
+
+    .word-bank {
+      margin-top: 20px;
+      background-color: #ffffff;
+      padding: 10px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .word {
+      display: inline-block;
+      margin: 5px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background-color: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      cursor: grab;
+      font-size: 24px;
+      direction: rtl;
+    }
+
+    .controls {
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      margin: 5px;
+      cursor: pointer;
+    }
+
+    button.reset {
+      background-color: #ef4444;
+    }
+
+    #feedback {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Jodohkan Gambar dengan Bahasa Arab</h1>
+  <p>Seret tulisan Arab ke kotak di bawah gambar yang sesuai. Tekan <b>Hasil</b> untuk memeriksa, dan <b>Reset</b> untuk mengulang.</p>
+
+  <div class="container">
+    <div class="card">
+      <img src="https://static.vecteezy.com/system/resources/previews/034/898/309/non_2x/boy-cartoon-head-isolated-white-background-free-vector.jpg" alt="kepala" />
+      <div class="dropzone" data-correct="رَأْسٌ"></div>
+    </div>
+    <div class="card">
+      <img src="https://ners.unair.ac.id/site/images/Lihat/Cara_Merawat_Rambut_agar_Tetap_Sehat.jpg" alt="rambut" />
+      <div class="dropzone" data-correct="سَعْرٌ"></div>
+    </div>
+    <div class="card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQg827PytpgXWy2WeDtKUberaE00wkjhmtjdA&s" alt="mata" />
+      <div class="dropzone" data-correct="عَيْنٌ"></div>
+    </div>
+    <div class="card">
+      <img src="https://png.pngtree.com/element_our/20190602/ourmid/pngtree-human-organ-nose-illustration-image_1413711.jpg" alt="hidung" />
+      <div class="dropzone" data-correct="أنْفٌ"></div>
+    </div>
+    <div class="card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrDj4kdA8qbuGchNE9p6PthbEFcqhLZbFH0w5_nTu9PIoSUvG8oghnFAktWhCFS0hQ-tE&usqp=CAU" alt="mulut" />
+      <div class="dropzone" data-correct="فَمٌ"></div>
+    </div>
+    <div class="card">
+      <img src="https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2021/11/04025745/kenali-bagian-bagian-telinga-dan-fungsinya-halodoc.jpg.webp" alt="telinga" />
+      <div class="dropzone" data-correct="أُذُنٌ"></div>
+    </div>
+  </div>
+
+  <div class="word-bank" id="wordBank"></div>
+
+  <div class="controls">
+    <button id="check">Hasil</button>
+    <button class="reset" id="reset">Reset</button>
+  </div>
+
+  <div id="feedback"></div>
+
+  <script>
+    const words = ["رَأْسٌ", "سَعْرٌ", "عَيْنٌ", "أنْفٌ", "فَمٌ", "أُذُنٌ"];
+    const wordBank = document.getElementById("wordBank");
+    const dropzones = document.querySelectorAll(".dropzone");
+    const feedback = document.getElementById("feedback");
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function createWordBank() {
+      wordBank.innerHTML = "";
+      shuffle([...words]).forEach((word) => {
+        const div = document.createElement("div");
+        div.classList.add("word");
+        div.textContent = word;
+        div.draggable = true;
+        div.addEventListener("dragstart", dragStart);
+        wordBank.appendChild(div);
+      });
+    }
+
+    function dragStart(e) {
+      e.dataTransfer.setData("text", e.target.textContent);
+      e.target.classList.add("dragging");
+    }
+
+    dropzones.forEach((zone) => {
+      zone.addEventListener("dragover", (e) => e.preventDefault());
+      zone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const text = e.dataTransfer.getData("text");
+        if (text) {
+          zone.textContent = text;
+          zone.classList.add("filled");
+          const dragging = document.querySelector(".dragging");
+          if (dragging) dragging.remove();
+        }
+      });
+    });
+
+    document.getElementById("check").addEventListener("click", () => {
+      let correct = true;
+      dropzones.forEach((zone) => {
+        if (zone.textContent.trim() !== zone.dataset.correct) {
+          correct = false;
+        }
+      });
+      feedback.textContent = correct
+        ? "Jawaban Anda benar. Luar biasa!"
+        : "Jawaban Anda salah. Mohon ulangi lagi.";
+      feedback.style.color = correct ? "green" : "red";
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      dropzones.forEach((z) => {
+        z.textContent = "";
+        z.classList.remove("filled");
+      });
+      feedback.textContent = "";
+      createWordBank();
+    });
+
+    createWordBank();
+  </script>
+</body>
+</html>
