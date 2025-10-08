@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TEKA-TEKI</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;}
+    body{display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background-color:#006400;}
+    .card{background:#90EE90;padding:28px;border-radius:14px;box-shadow:0 8px 30px rgba(37,47,63,0.08);width:min(720px,94vw);}
+    h1{margin:0 0 12px;font-size:28px;letter-spacing:1px;text-align:center}
+    p.riddle{background:#d0f0c0;padding:14px;border-radius:8px;margin:12px 0;font-size:16px}
+    .controls{display:flex;gap:10px;align-items:center}
+    input[type='text']{flex:1;padding:10px 12px;border-radius:8px;border:1px solid #d0d7ef;font-size:16px;background:white;}
+    button{padding:10px 14px;border-radius:8px;border:none;background:#2b6be4;color:white;font-weight:600;cursor:pointer}
+    button:active{transform:translateY(1px)}
+    .feedback{margin-top:14px;font-weight:600}
+    .correct{color:green}
+    .wrong{color:#c83232}
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <h1>TEKA-TEKI</h1>
+
+    <p class="riddle">"Aku adalah seekor hewan. Jumlah kakiku ada empat buah. Aku memiliki ekor. Aku juga memiliki belalai. Siapakah aku?"</p>
+
+    <div class="controls">
+      <label for="answer" class="visually-hidden">Jawaban</label>
+      <input id="answer" type="text" placeholder="" aria-label="Jawaban teka-teki">
+      <button id="checkBtn">Cek Jawaban</button>
+    </div>
+
+    <div id="feedback" class="feedback" aria-live="polite"></div>
+  </main>
+
+  <script>
+    (function(){
+      const input = document.getElementById('answer');
+      const btn = document.getElementById('checkBtn');
+      const feedback = document.getElementById('feedback');
+
+      function check(){
+        const raw = input.value || '';
+        const normalized = raw.trim().toLowerCase();
+        if(normalized === 'gajah'){
+          feedback.textContent = 'Jawaban Anda benar, hebat';
+          feedback.className = 'feedback correct';
+        } else {
+          feedback.textContent = 'Jawaban Anda salah, silahkan coba lagi.';
+          feedback.className = 'feedback wrong';
+        }
+      }
+
+      btn.addEventListener('click', check);
+      input.addEventListener('keydown', function(e){ if(e.key === 'Enter') check(); });
+    })();
+  </script>
+</body>
+</html>
