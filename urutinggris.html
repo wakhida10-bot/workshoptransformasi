@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urutkan Kata Bahasa Inggris</title>
+<style>
+  body {
+    background-color: white; /* Background putih */
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h2 {
+    color: darkgreen;
+  }
+
+  .container {
+    background-color: #ccffcc; /* Hijau muda */
+    padding: 20px;
+    border-radius: 12px;
+    width: 80%;
+    margin: auto;
+  }
+
+  .word-box {
+    display: inline-block;
+    background-color: white;
+    border: 2px solid #4CAF50;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: grab;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  textarea {
+    width: 80%;
+    height: 60px;
+    border: 2px solid #4CAF50;
+    border-radius: 8px;
+    background-color: white; /* Teks area putih */
+    padding: 10px;
+    margin-top: 10px;
+    resize: none;
+    font-size: 16px;
+  }
+
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  #feedback {
+    font-weight: bold;
+    margin-top: 15px;
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+  <h2>Urutkan Kata Bahasa Inggris</h2>
+
+  <div class="container">
+    <p>Susun kata berikut agar menjadi kalimat yang benar:</p>
+
+    <div id="wordContainer"></div>
+
+    <textarea id="dropArea" placeholder="Tarik dan jatuhkan kata ke sini secara berurutan..."></textarea><br>
+
+    <button onclick="checkAnswer()">Hasil</button>
+    <button onclick="resetGame()">Reset</button>
+
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    const correctOrder = ["I", "am", "going", "to", "the", "market"];
+    let words = [...correctOrder];
+
+    // Fungsi acak kata
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    // Tampilkan kata acak
+    function displayWords() {
+      shuffle(words);
+      const container = document.getElementById("wordContainer");
+      container.innerHTML = "";
+      words.forEach(word => {
+        const span = document.createElement("span");
+        span.textContent = word;
+        span.classList.add("word-box");
+        span.draggable = true;
+        span.addEventListener("dragstart", dragStart);
+        container.appendChild(span);
+      });
+    }
+
+    // Drag dimulai
+    function dragStart(event) {
+      event.dataTransfer.setData("text", event.target.textContent);
+      event.target.style.opacity = "0.3"; // efek transparan saat di-drag
+      event.target.classList.add("dragged");
+    }
+
+    const dropArea = document.getElementById("dropArea");
+
+    // Izinkan drop
+    dropArea.addEventListener("dragover", (event) => {
+      event.preventDefault();
+    });
+
+    // Saat dijatuhkan
+    dropArea.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const word = event.dataTransfer.getData("text");
+      dropArea.value += (dropArea.value ? "-" : "") + word;
+
+      // Hilangkan kata dari daftar setelah dipindah
+      const draggedWord = document.querySelector(`.word-box.dragged`);
+      if (draggedWord) draggedWord.remove();
+    });
+
+    // Cek jawaban
+    function checkAnswer() {
+      const userAnswer = dropArea.value.trim();
+      const correctAnswer = correctOrder.join("-");
+      const feedback = document.getElementById("feedback");
+
+      if (userAnswer === correctAnswer) {
+        feedback.textContent = "Hebat! Jawaban Anda benar.";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = "Maaf. Jawaban Anda salah. Ulangi lagi.";
+        feedback.style.color = "red";
+      }
+    }
+
+    // Reset permainan
+    function resetGame() {
+      dropArea.value = "";
+      document.getElementById("feedback").textContent = "";
+      words = [...correctOrder];
+      displayWords();
+    }
+
+    // Jalankan pertama kali
+    displayWords();
+  </script>
+</body>
+</html>
